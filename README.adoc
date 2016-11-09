@@ -1,0 +1,39 @@
+= Top 20 I/O Wait nodes
+
+Jasper Report template for OpenNMS which shows the top 20 nodes with highest I/O wait.
+
+== Requirements
+
+* Report requires to have `storeByForeignSource=true`
+* _Statsd_ needs to be enabled in `service-configuration.xml`
+
+== Install
+
+. Download
+. copy to `${OPENNMS_HOME}/etc/report-templates`
+. add in `database-reports.xml`
+[source, xml]
+----
+<report id="Top20-IOWait" display-name="TOP 20 nodes by I/O Wait" online="true" report-service="jasperReportService" description="TOP 20 nodes by I/O Wait" />
+----
+. add in `jasper-reports.xml`
+[source, xml]
+----
+<report id="Top20-IOWait" template="TopIOWait.jrxml" engine="jdbc" />
+----
+. add `statsd-configuration.xml`
+[source, xml]
+----
+<package name="IOWAITReports">
+    <packageReport name="TopN_IOWait" description="Top 20 iowait across all nodes"
+                   schedule="0 17 10 * * ?" retainInterval="2592000000"
+                   status="off">
+        <parameter key="count" value="20"/>
+        <parameter key="consolidationFunction" value="AVERAGE"/>
+        <parameter key="relativeTime" value="YESTERDAY"/>
+        <parameter key="resourceTypeMatch" value="nodeSnmp"/>
+        <parameter key="attributeMatch" value="CpuRawWait"/>
+    </packageReport>
+</package>
+----
+. restart opennms
