@@ -9,19 +9,34 @@ Jasper Report template for OpenNMS which shows the top 20 nodes with highest I/O
 
 == Install
 
-. Download
-. copy to `${OPENNMS_HOME}/etc/report-templates`
-. add in `database-reports.xml`
+.Step 1
+Download the report template into OpenNMS report template directory
+[source, bash]
+----
+cd ${OPENNMS_HOME}/etc/report-templates`
+wget https://raw.githubusercontent.com/opennms-forge/jasper-reports-top-io-wait/master/TopIOWait.jrxml
+----
+
+.Step 2
+Register a new database report in `database-reports.xml`
+
 [source, xml]
 ----
 <report id="Top20-IOWait" display-name="TOP 20 nodes by I/O Wait" online="true" report-service="jasperReportService" description="TOP 20 nodes by I/O Wait" />
 ----
-. add in `jasper-reports.xml`
+
+.Step 3
+Assign report to be executed with the built-in JasperReport engine
+
 [source, xml]
 ----
 <report id="Top20-IOWait" template="TopIOWait.jrxml" engine="jdbc" />
 ----
-. add `statsd-configuration.xml`
+
+.Step 4
+Create TopN data extraction with _Statsd_ in `statsd-configuration.xml`.
+The example package below gathers TopN data every day 17:10 and keeps it in the database for 30 days.
+
 [source, xml]
 ----
 <package name="IOWAITReports">
@@ -36,4 +51,16 @@ Jasper Report template for OpenNMS which shows the top 20 nodes with highest I/O
     </packageReport>
 </package>
 ----
-. restart opennms
+.Step 5
+
+The changes in `statsd-configuration.xml` require a restart of _OpenNMS_.
+As soon the first TopN run populate the database the JasperReport can be used.
+
+[source, bash]
+----
+# On systems using Systemd
+systemctl restart opennms
+
+# On systems with legacy init environment
+service opennms restart
+----
