@@ -13,7 +13,7 @@ Jasper Report template for OpenNMS which shows the top 20 nodes with highest I/O
 Download the report template into OpenNMS report template directory
 [source, bash]
 ----
-cd ${OPENNMS_HOME}/etc/report-templates`
+cd ${OPENNMS_HOME}/etc/report-templates
 wget https://raw.githubusercontent.com/opennms-forge/jasper-reports-top-io-wait/master/TopIOWait.jrxml
 ----
 
